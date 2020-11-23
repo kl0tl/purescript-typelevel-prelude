@@ -12,6 +12,8 @@ module Type.Data.Boolean
   , not
   , class If
   , if_
+  , class Equals
+  , equals
   ) where
 
 import Prim.Boolean (True, False)
@@ -70,3 +72,14 @@ instance ifFalse :: If False onTrue onFalse onFalse
 
 if_ :: forall b t e o. If b t e o => BProxy b -> Proxy t -> Proxy e -> Proxy o
 if_ _ _ _ = Proxy
+
+class Equals :: Boolean -> Boolean -> Boolean -> Constraint
+class Equals lhs rhs out | lhs rhs -> out, lhs out -> rhs, rhs out -> lhs
+
+instance equalsTrueTrue :: Equals True True True
+else instance equalsTrueFalse :: Equals True False False
+else instance equalsFalseTrue :: Equals False True False
+else instance equalsFalseFalse :: Equals False False True
+
+equals :: forall proxy l r o. Equals l r o => proxy l -> proxy r -> Proxy o
+equals _ _ = Proxy
